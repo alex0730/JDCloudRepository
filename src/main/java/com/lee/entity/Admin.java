@@ -5,19 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author lee
- * @since 2020-02-19
- */
+@Data
 public class Admin extends Model<Admin> {
 
     private static final long serialVersionUID = 1L;
@@ -87,139 +80,21 @@ public class Admin extends Model<Admin> {
     @TableField(exist = false)
     private String roleName;
 
+    @TableField(exist = false)
+    private String roleId;
+
     /**
      * 密码
      */
     @TableField(exist = false)
     private String deptName;
 
+    private String deptId;
+
     /**
      * 手机号
      */
-
     private String mobile;
 
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public String getDeptName() {
-        return deptName;
-    }
-
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
-
-    public Integer getIsdel() {
-        return isdel;
-    }
-
-    public void setIsdel(Integer isdel) {
-        this.isdel = isdel;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-    public Integer getIsSupper() {
-        return isSupper;
-    }
-
-    public void setIsSupper(Integer isSupper) {
-        this.isSupper = isSupper;
-    }
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-    public String getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(String updateTime) {
-        this.updateTime = updateTime;
-    }
-    public String getDeleteTime() {
-        return deleteTime;
-    }
-
-    public void setDeleteTime(String deleteTime) {
-        this.deleteTime = deleteTime;
-    }
-
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
-
-    @Override
-    public String toString() {
-        return "SbAdmin{" +
-        "id=" + id +
-        ", username=" + username +
-        ", password=" + password +
-        ", nickname=" + nickname +
-        ", email=" + email +
-        ", status=" + status +
-        ", isSupper=" + isSupper +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", deleteTime=" + deleteTime +
-        "}";
-    }
+    private String userId;
 }

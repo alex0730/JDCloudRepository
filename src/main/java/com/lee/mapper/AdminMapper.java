@@ -20,4 +20,5 @@ public interface AdminMapper extends BaseMapper<Admin> {
 
     List<Admin> selectUserList(Map<String,Object> map);
 
+    Integer selectUserCount(Map<String,Object> map);
 }

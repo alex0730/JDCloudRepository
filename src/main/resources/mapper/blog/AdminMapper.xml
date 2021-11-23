@@ -47,13 +47,13 @@
         JOIN role c ON b.role_work_id = c.work_id
         JOIN dept d ON a.dept_id = d.dept_id
         WHERE a.isdel = 0
-        <if test="userName != null">
+        <if test="username != null">
             and a.username =#{userName}
         </if>
         <if test="mobile != null">
             and a.mobile = #{mobile}
         </if>
-        <if test="nickName != null">
+        <if test="nickname != null">
             and a.nickname = #{nickName}
         </if>
         <if test="status != null">
@@ -71,6 +71,75 @@
         order by a.create_time desc
         <!-- 手动添加分页 -->
         <if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+    </select>
+    <select id="selectUserList" resultMap="ResultMap" parameterType="java.util.Map">
+        SELECT
+            a.user_id as id,
+            a.username as username,
+            a.nickname as nickname,
+            c.role_name as roleName,
+            d.dept_name as deptName,
+            a.mobile as mobile,
+            a.`status` as status,
+            a.create_time as create_time
+        FROM
+        admin a
+        JOIN admin_role b ON a.user_id = b.admin_id
+        JOIN role c ON b.role_work_id = c.work_id
+        JOIN dept d ON a.dept_id = d.dept_id
+        WHERE a.isdel = 0
+        <if test="username != null">
+            and a.username =#{userName}
+        </if>
+        <if test="mobile != null">
+            and a.mobile = #{mobile}
+        </if>
+        <if test="nickname != null">
+            and a.nickname = #{nickName}
+        </if>
+        <if test="status != null">
+            and a.status = #{status}
+        </if>
+        <if test="deptName != null">
+            and d.dept_name like concat('%', #{deptName}, '%')
+        </if>
+        <if test="roleName != null">
+            and c.role_name like concat('%', #{roleName}, '%')
+        </if>
+        <if test="createTimeStart != null and createTimeEnd != null">
+            and a.create_time between #{createTimeStart} and #{createTimeEnd}
+        </if>
+    </select>
+    <select id="selectUserCount" resultType="Integer">
+        SELECT
+          count(1)
+        FROM
+        admin a
+        JOIN admin_role b ON a.user_id = b.admin_id
+        JOIN role c ON b.role_work_id = c.work_id
+        JOIN dept d ON a.dept_id = d.dept_id
+        WHERE a.isdel = 0
+        <if test="username != null">
+            and a.username =#{userName}
+        </if>
+        <if test="mobile != null">
+            and a.mobile = #{mobile}
+        </if>
+        <if test="nickname != null">
+            and a.nickname = #{nickName}
+        </if>
+        <if test="status != null">
+            and a.status = #{status}
+        </if>
+        <if test="deptName != null">
+            and d.dept_name like concat('%', #{deptName}, '%')
+        </if>
+        <if test="roleName != null">
+            and c.role_name like concat('%', #{roleName}, '%')
+        </if>
+        <if test="createTimeStart != null and createTimeEnd != null">
+            and a.create_time between #{createTimeStart} and #{createTimeEnd}
+        </if>
     </select>
 
 </mapper>

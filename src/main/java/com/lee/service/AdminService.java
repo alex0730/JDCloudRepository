@@ -2,8 +2,8 @@ package com.lee.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lee.entity.Admin;
+import com.lee.entity.common.GenericResponse;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface AdminService extends IService<Admin> {
    Admin getInfoByUsernameAndPassword(String username, String password);
-   List<Admin> getPageInfo(Map<String, Object> queryParam);
+   GenericResponse getPageInfo(Map<String, Object> queryParam);
    Admin getByUsername(String username);
 
 }

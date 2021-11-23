@@ -1,14 +1,17 @@
 package com.lee.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lee.entity.Admin;
+import com.lee.entity.common.GenericResponse;
+import com.lee.entity.common.ResponseFormat;
 import com.lee.mapper.AdminMapper;
 import com.lee.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +24,7 @@ import java.util.Map;
  */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements AdminService {
+
     @Autowired
     private AdminMapper adminMapper;
 
@@ -38,12 +42,15 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
     /**
      * 根据查询条件获取管理员列表信息
      * @param queryParam
-     * @param offset
-     * @param size
      * @return
      */
-    public List<Admin> getPageInfo(Map<String, Object> queryParam){
-        return this.adminMapper.selectUserList(queryParam);
+    public GenericResponse getPageInfo(Map<String, Object> queryParam) {
+        IPage<Admin> page = new Page<>();
+        page.setRecords(this.adminMapper.selectUserList(queryParam));
+        page.setTotal(this.adminMapper.selectUserCount(queryParam));
+        page.setCurrent(Long.valueOf(String.valueOf(queryParam.get("offsetIndex"))));
+        page.setSize(Long.valueOf(String.valueOf(queryParam.get("limit"))));
+        return ResponseFormat.retParam(200, page);
     }
 
     /**
