@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.PictureMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="pictureMapper" type="com.lee.entity.PictureModel">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="tags" column="tags"/>
+        <result property="instructions" column="instructions"/>
+        <result property="remark" column="remark"/>
+        <result property="isRecommend" column="is_recommend"/>
+        <result property="adminId" column="admin_id"/>
+        <result property="viewNum" column="view_num"/>
+        <result property="commentNum" column="comment_num"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="sort" column="sort"/>
+        <result property="picUrl" column="pic_url"/>
+        <result property="thumbnailUrl" column="thumbnail_url"/>
+    </resultMap>
+
+    <select id="selectPictureModel" resultMap="pictureMapper">
+        SELECT
+        picture.id AS id,
+        picture.title as title,
+        picture_tag.tag_cn_name AS tags,
+        remark AS remark,
+        STATUS AS status,
+        sort AS sort,
+        pic_url AS pic_url,
+        thumbnail_url AS thumbnail_url
+        FROM
+        picture
+        JOIN picture_tag ON picture.tags = picture_tag.work_id WHERE 1 = 1
+        <if test="title != null and title != ''">
+            AND picture.title LIKE CONCAT('%',#{title},'%')
+        </if>
+        <if test="tagCnName != null and tagCnName != ''">
+            AND picture_tag.tag_cn_name LIKE CONCAT('%',#{tagCnName},'%')
+        </if>
+        ORDER BY sort, create_time LIMIT #{pageNo},#{pageSize};
+    </select>
+
+    <select id="selectPictureModelCount" resultType="int">
+        SELECT
+        count(1)
+        FROM
+        picture
+        JOIN picture_tag ON picture.tags = picture_tag.work_id WHERE 1 = 1
+        <if test="title != null and title != ''">
+            AND picture.title LIKE CONCAT('%',#{title},'%')
+        </if>
+        <if test="tagCnName != null and tagCnName != ''">
+            AND picture_tag.tag_cn_name LIKE CONCAT('%',#{tagCnName},'%')
+        </if>
+    </select>
+
+</mapper>
