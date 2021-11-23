@@ -129,12 +129,12 @@ public class AuthController extends BasicController {
     @ApiOperation(value = "修改用户信息")
     public GenericResponse doUpdate(
             @ApiParam(value = "用户Id", required = true) @RequestParam Integer id,
-            @ApiParam(value = "员工姓名") @RequestParam String nickname,
-            @ApiParam(value = "手机号码") @RequestParam String mobile,
-            @ApiParam(value = "员工角色") @RequestParam String roleId,
-            @ApiParam(value = "所属部门") @RequestParam String deptId,
-            @ApiParam(value = "员工姓名") @RequestParam String passWord,
-            @ApiParam(value = "用户状态") @RequestParam Integer status
+            @ApiParam(value = "员工姓名") @RequestParam(required = false)  String nickname,
+            @ApiParam(value = "手机号码") @RequestParam(required = false)  String mobile,
+            @ApiParam(value = "员工角色") @RequestParam(required = false)  String roleId,
+            @ApiParam(value = "所属部门") @RequestParam(required = false)  String deptId,
+            @ApiParam(value = "员工姓名") @RequestParam(required = false)  String passWord,
+            @ApiParam(value = "用户状态") @RequestParam(required = false)  Integer status
     ) {
         try {
             Admin adminInfo = adminService.getById(id);

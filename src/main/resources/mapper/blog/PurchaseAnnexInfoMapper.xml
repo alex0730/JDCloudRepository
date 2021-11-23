@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.PurchaseAnnexMapper">
+	<!-- 返回值映射map -->
+	<resultMap id="purchasePaymentInfoMapper" type="com.lee.entity.PurchaseAnnexInfoModel">
+		<result property="id" column="id" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="annexExt" column="annex_ext" />
+		<result property="isdel" column="isdel" />
+		<result property="purchaseAnnexType" column="purchase_annex_type" />
+		<result property="purchaseAnnexAnme" column="purchase_annex_anme" />
+		<result property="purchaseOrderNum" column="purchase_order_num" />
+		<result property="purchaseAnnexPath" column="purchase_annex_path" />
+		<result property="purchaseAnnexUptime" column="purchase_annex_uptime" />
+	</resultMap>
+	
+</mapper>

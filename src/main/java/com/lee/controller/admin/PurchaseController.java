@@ -1,17 +1,20 @@
 package com.lee.controller.admin;
 
 
-import com.alibaba.fastjson.JSONObject;
-import com.lee.common.DataGrid;
-import com.lee.entity.PurchaseOrderInfoModel;
-import com.lee.entity.PurchasePaymentInfoModel;
-import com.lee.service.CateService;
+import com.lee.entity.common.GenericResponse;
+import com.lee.entity.common.ResponseFormat;
+import com.lee.service.PurchaseService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -21,100 +24,75 @@ import java.util.List;
  * @author lee
  * @since 2020-02-21
  */
+@Api(value = "采购订单管理", description = "采购订单管理")
 @Controller
 @RequestMapping("/purchase")
 public class PurchaseController extends BasicController {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
-    CateService cateService;
+    PurchaseService purchaseService;
 
-    /**
-     * 栏目列表
-     *
-     * @return
-     */
-    @GetMapping("list")
-    public String list() {
-        return "admin/purchase/list";
-    }
-
-    /**
-     * 加载列表数据
-     */
     @PostMapping("findList")
+    @ApiOperation(value = "采购订单列表")
     @ResponseBody
-    public DataGrid findList(@RequestBody JSONObject jsonObject) {
-//        Map<String, Object> searchParams = (HashMap<String, Object>) jsonObject.get("search");
-//        int offset = "".equals(jsonObject.getString("offset")) ? 0 : jsonObject.getIntValue("offset");
-//        int size = "".equals(jsonObject.getString("limit")) ? 10 : jsonObject.getIntValue("limit");
-//
-//        IPage<Map<String, Object>> page = cateService.getPageInfo(searchParams, offset, size);
-//
-//        DataGrid result = new DataGrid();
-//        result.setTotal(page.getTotal());
-//        result.setRows(page.getRecords());
-        List<PurchaseOrderInfoModel> pageInfo = new ArrayList<PurchaseOrderInfoModel>();
-        PurchaseOrderInfoModel model = new PurchaseOrderInfoModel();
-        model.setPurchaseNum("10451");
-        model.setPurchaseDate("2020-03-12");
-        model.setSupplierName("泰达洁净");
-        model.setOrderAmount("24480");
-        model.setCapitalTypeName("专项资金");
-        model.setPurchasePaymentStatus("0");
-        model.setPurchasePerson("王XX");
-        model.setPurchasePurpose("防汛储备");
-        model.setPurchaseBasis("XXX");
-        model.setPurchaseCreateDate("2020-09-08");
-        model.setPurchaseCompleteDate("-");
-        pageInfo.add(model);
-        DataGrid result = new DataGrid();
-        result.setRows(pageInfo);
-        result.setTotal(10L);
-        return result;
-    }
-    /**
-     * 加载列表数据
-     */
-    @GetMapping("add")
-    public String add() {
-        return "admin/purchase/add";
+    public GenericResponse findList(
+            @ApiParam(value = "申购日期开始时间") @RequestParam(required = false) String purchaseStartDate,
+            @ApiParam(value = "申购日期结束时间") @RequestParam(required = false) String purchaseEndDate,
+            @ApiParam(value = "供应商Id") @RequestParam(required = false) String supplierNum,
+            @ApiParam(value = "采购订单状态Id") @RequestParam(required = false) String purchaseType,
+            @ApiParam(value = "采购订单最小金额") @RequestParam(required = false) String orderMinAmount,
+            @ApiParam(value = "采购订单最大金额") @RequestParam(required = false) String orderMaxAmount,
+            @ApiParam(value = "采购负责人") @RequestParam(required = false) String purchasePerson,
+            @ApiParam(value = "资金类型Id") @RequestParam(required = false) String capitalType,
+            @ApiParam(value = "采购物资编码Id") @RequestParam(required = false) String purchaseMatCode,
+            @ApiParam(value = "采购依据Id") @RequestParam(required = false) String purchaseBasis,
+            @ApiParam(value = "当前页面", required = true) @RequestParam Integer pageNo,
+            @ApiParam(value = "每页记录数", required = true) @RequestParam Integer pageSize) {
+        Map<String, Object> searchParams = new HashMap<>();
+        try {
+            searchParams.put("purchaseStartDate", purchaseStartDate);
+            searchParams.put("purchaseEndDate", purchaseEndDate);
+            searchParams.put("supplierNum", supplierNum);
+            searchParams.put("purchaseType", purchaseType);
+            searchParams.put("orderMinAmount", orderMinAmount);
+            searchParams.put("orderMaxAmount", orderMaxAmount);
+            searchParams.put("purchasePerson", purchasePerson);
+            searchParams.put("capitalType", capitalType);
+            searchParams.put("purchaseMatCode", purchaseMatCode);
+            searchParams.put("purchaseBasis", purchaseBasis);
+            searchParams.put("offsetIndex", pageNo);
+            searchParams.put("limit", pageSize);
+            return ResponseFormat.retParam(200, purchaseService.getPageInfo(searchParams));
+        } catch (Exception e) {
+            logger.error("查询采购订单列表异常", e);
+            return ResponseFormat.retParam(500, "查询采购订单列表异常");
+        }
     }
 
-    @GetMapping("/view/{id}")
-    public String update(@PathVariable Integer id, PurchaseOrderInfoModel model) {
-        model.setId(1);
-        model.setPurchaseNum("10451");
-        model.setPurchaseDate("2020-03-12");
-        model.setSupplierName("泰达洁净");
-        model.setOrderAmount("24480");
-        model.setCapitalTypeName("专项资金");
-        model.setPurchasePaymentStatusName("部分付款");
-        model.setPurchasePerson("王XX");
-        model.setPurchasePurposeName("防汛储备");
-        model.setPurchaseBasis("XXX");
-        model.setPurchaseCreateDate("2020-09-08");
-        model.setPurchaseCompleteDate("-");
-        model.setContractSigningDate("2020-09-08");
-        model.setCapitalTypeName("专项资金");
-        model.setOrderAmount("450,000");
-        return "admin/purchase/view";
+    @RequestMapping(value = "delete", method = RequestMethod.GET)
+    @ApiOperation(value = "删除采购订单信息")
+    public GenericResponse doDelete(@ApiParam(value = "采购订单信息Id", required = true) @RequestParam(value = "id") Integer id) {
+        try {
+            purchaseService.removeById(id);
+            return ResponseFormat.retParam(200, "删除采购订单信息成功");
+        } catch (Exception e) {
+            logger.error("删除采购订单信息异常", e);
+            return ResponseFormat.retParam(500, "删除采购订单信息异常");
+        }
     }
 
-
-    @PostMapping("paymentInfo")
+    @RequestMapping(value = "view", method = RequestMethod.GET)
+    @ApiOperation(value = "采购订单信息详情")
     @ResponseBody
-    public DataGrid getPaymentInfo(@RequestBody JSONObject jsonObject) {
-        List<PurchasePaymentInfoModel> pageInfo = new ArrayList<PurchasePaymentInfoModel>();
-        PurchasePaymentInfoModel model = new PurchasePaymentInfoModel();
-        model.setId(1);
-        model.setPurchasePaymentAmount("90,000");
-        model.setPurchasePaymentDate("2020年3月15日");
-        model.setPurchasePaymentRatio("20%");
-        pageInfo.add(model);
-        DataGrid result = new DataGrid();
-        result.setRows(pageInfo);
-        result.setTotal(10L);
-        return result;
+    public GenericResponse doView(@ApiParam(value = "采购订单信息Id", required = true) @RequestParam(value = "id") Integer id) {
+        try {
+            return ResponseFormat.retParam(200, purchaseService.getPurchaseOrderInfo(id));
+        } catch (Exception e) {
+            logger.error("删除采购订单信息异常", e);
+            return ResponseFormat.retParam(500, "查询采购订单信息详情异常");
+        }
     }
-
 
 }

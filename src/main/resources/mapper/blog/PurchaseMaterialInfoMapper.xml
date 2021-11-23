@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.PurchaseMaterialMapper">
+	<!-- 返回值映射map -->
+	<resultMap id="purchaseMaterialInfoMapper" type="com.lee.entity.PurchaseMaterialInfoModel">
+			<result property="id" column="id" />
+			<result property="purchaseMatStatus" column="purchase_mat_status" />
+			<result property="purchaseExt" column="purchase_ext" />
+			<result property="purchaseMatCode" column="purchase_mat_code" />
+			<result property="purchaseMatUnit" column="purchase_mat_unit" />
+			<result property="purchaseMatNum" column="purchase_mat_num" />
+			<result property="purchaseMatAmount" column="purchase_mat_amount" />
+			<result property="createTime" column="create_time" />
+			<result property="updateTime" column="update_time" />
+			<result property="isdel" column="isdel" />
+	</resultMap>
+	
+</mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.PurchaseMapper">
+	<!-- 返回值映射map -->
+	<!--<resultMap id="purchaseOrderInfoMapper" type="com.lee.entity.PurchaseOrderInfoModel">-->
+			<!--<result property="id" column="id" />-->
+			<!--<result property="purchaseNum" column="purchase_num" />-->
+			<!--<result property="purchaseDate" column="purchase_date" />-->
+			<!--<result property="supplierNum" column="supplier_num" />-->
+			<!--<result property="orderAmount" column="order_amount" />-->
+			<!--<result property="capitalType" column="capital_type" />-->
+			<!--<result property="purchaseType" column="purchase_type" />-->
+			<!--<result property="purchasePerson" column="purchase_person" />-->
+			<!--<result property="purchasePurpose" column="purchase_purpose" />-->
+			<!--<result property="purchaseBasis" column="purchase_basis" />-->
+			<!--<result property="purchaseCreateDate" column="purchase_create_date" />-->
+			<!--<result property="purchaseCompleteDate" column="purchase_complete_date" />-->
+			<!--<result property="contractSigningDate" column="contract_signing_date" />-->
+			<!--<result property="purchasePaymentStatus" column="purchase_payment_status" />-->
+			<!--<result property="purchasePaymentRatio" column="purchase_payment_ratio" />-->
+			<!--<result property="createTime" column="create_time" />-->
+			<!--<result property="updateTime" column="update_time" />-->
+			<!--<result property="dicExt" column="dic_ext" />-->
+			<!--<result property="isdel" column="isdel" />-->
+	<!--</resultMap>-->
+
+	<!-- 返回值映射map -->
+	<resultMap id="purchaseOrderInfoMapper" type="com.lee.entity.PurchaseOrderInfoModel">
+		<result property="id" column="id" />
+		<result property="purchaseNum" column="purchase_num" />
+		<result property="purchaseDate" column="purchase_date" />
+		<result property="supplierNum" column="supplier_num" />
+		<result property="orderAmount" column="order_amount" />
+		<result property="capitalType" column="capital_type" />
+		<result property="purchaseType" column="purchase_type" />
+		<result property="purchasePerson" column="purchase_person" />
+		<result property="purchasePurpose" column="purchase_purpose" />
+		<result property="purchaseBasis" column="purchase_basis" />
+		<result property="purchaseCreateDate" column="purchase_create_date" />
+		<result property="purchaseCompleteDate" column="purchase_complete_date" />
+		<result property="supplierName" column="sup_name" />
+	</resultMap>
+
+	<select id="selectPurchaseOrderList" resultMap="purchaseOrderInfoMapper" parameterType="java.util.Map">
+		SELECT
+		a.id
+		a.purchase_num,
+		a.purchase_date,
+		b.sup_name,
+		a.order_amount,
+		a.capital_type,
+		a.purchase_type,
+		a.purchase_person,
+		a.purchase_purpose,
+		a.purchase_basis,
+		a.purchase_create_date,
+		a.purchase_complete_date
+		FROM
+		purchase_order_info a
+		JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
+		JOIN purchase_material_info d ON a.purchase_num = d.purchase_num
+		WHERE a.isdel = 0
+		<if test="purchaseStartDate != null and purchaseEndDate != null">
+			and a.purchase_date BETWEEN #{purchaseStartDate} AND #{purchaseEndDate}
+		</if>
+		<if test="supplierNum != null">
+			and a.supplier_num =  #{supplierNum}
+		</if>
+		<if test="purchaseType != null">
+			and a.purchase_type =  #{purchaseType}
+		</if>
+		<if test="orderMinAmount != null and orderMaxAmount!= null">
+			and a.order_amount BETWEEN #{orderMinAmount} AND #{orderMaxAmount}
+		</if>
+		<if test="purchasePerson != null">
+			and a.purchase_person =  #{purchasePerson}
+		</if>
+		<if test="capitalType != null">
+			and a.capital_type =  #{capitalType}
+		</if>
+		<if test="capitalType != null">
+			and a.capital_type =  #{capitalType}
+		</if>
+		<if test="purchaseMatCode != null">
+			and d.purchase_mat_code =  #{purchaseMatCode}
+		</if>
+		<if test="purchaseBasis != null">
+			and a.purchase_purpose =  #{purchaseBasis}
+		</if>
+		<if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+	</select>
+	<select id="selectPurchaseOrderCount" resultType="Integer" parameterType="java.util.Map">
+		SELECT
+			count(1)
+		FROM
+		purchase_order_info a
+		JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
+		JOIN purchase_material_info d ON a.purchase_num = d.purchase_num
+		WHERE a.isdel = 0
+		<if test="purchaseStartDate != null and purchaseEndDate != null">
+			and a.purchase_date BETWEEN #{purchaseStartDate} AND #{purchaseEndDate}
+		</if>
+		<if test="supplierNum != null">
+			and a.supplier_num =  #{supplierNum}
+		</if>
+		<if test="purchaseType != null">
+			and a.purchase_type =  #{purchaseType}
+		</if>
+		<if test="orderMinAmount != null and orderMaxAmount!= null">
+			and a.order_amount BETWEEN #{orderMinAmount} AND #{orderMaxAmount}
+		</if>
+		<if test="purchasePerson != null">
+			and a.purchase_person =  #{purchasePerson}
+		</if>
+		<if test="capitalType != null">
+			and a.capital_type =  #{capitalType}
+		</if>
+		<if test="capitalType != null">
+			and a.capital_type =  #{capitalType}
+		</if>
+		<if test="purchaseMatCode != null">
+			and d.purchase_mat_code =  #{purchaseMatCode}
+		</if>
+		<if test="purchaseBasis != null">
+			and a.purchase_purpose =  #{purchaseBasis}
+		</if>
+	</select>
+
+
+</mapper>
