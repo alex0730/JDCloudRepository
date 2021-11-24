@@ -56,7 +56,7 @@ public class PurchaseMaterialInfoModel implements Serializable {
     /**
      * 采购订单编号
      */
-    private Integer purchaseNum;
+    private String purchaseNum;
 
 
 

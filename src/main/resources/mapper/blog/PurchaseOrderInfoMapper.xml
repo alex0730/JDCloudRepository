@@ -45,7 +45,7 @@
 
 	<select id="selectPurchaseOrderList" resultMap="purchaseOrderInfoMapper" parameterType="java.util.Map">
 		SELECT
-		a.id
+		a.id,
 		a.purchase_num,
 		a.purchase_date,
 		b.sup_name,

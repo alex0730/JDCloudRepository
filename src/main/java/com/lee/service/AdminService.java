@@ -8,15 +8,19 @@ import java.util.Map;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author lee
  * @since 2020-02-19
  */
 public interface AdminService extends IService<Admin> {
-   Admin getInfoByUsernameAndPassword(String username, String password);
-   GenericResponse getPageInfo(Map<String, Object> queryParam);
-   Admin getByUsername(String username);
+
+    Admin getInfoByUsernameAndPassword(String username, String password);
+
+    GenericResponse getPageInfo(Map<String, Object> queryParam);
+
+    Admin getByUsername(String username);
+
 
 }
