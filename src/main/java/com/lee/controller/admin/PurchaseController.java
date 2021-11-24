@@ -90,7 +90,7 @@ public class PurchaseController extends BasicController {
         try {
             return ResponseFormat.retParam(200, purchaseService.getPurchaseOrderInfo(id));
         } catch (Exception e) {
-            logger.error("删除采购订单信息异常", e);
+            logger.error("查询采购订单信息详情异常", e);
             return ResponseFormat.retParam(500, "查询采购订单信息详情异常");
         }
     }
