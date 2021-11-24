@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.SysSupplierMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="sysSupplierInfoMapper" type="com.lee.entity.SysSupplierInfoModel">
+        <result property="id" column="id"/>
+        <result property="supNum" column="sup_num"/>
+        <result property="supName" column="sup_name"/>
+        <result property="supContacts" column="sup_contacts"/>
+        <result property="supAddress" column="sup_address"/>
+        <result property="supTeleno" column="sup_teleno"/>
+        <result property="supMail" column="sup_mail"/>
+        <result property="supAccountNumber" column="sup_account_number"/>
+        <result property="supBankName" column="sup_bank_name"/>
+        <result property="supRemark" column="sup_remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="supExt" column="sup_ext"/>
+    </resultMap>
+
+</mapper>

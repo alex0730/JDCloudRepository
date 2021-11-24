@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,7 +30,7 @@ import java.util.Map;
  * @since 2020-02-21
  */
 @Api(value = "采购订单管理", description = "采购订单管理")
-@Controller
+@RestController
 @RequestMapping("/purchase")
 public class PurchaseController extends BasicController {
 
@@ -42,7 +41,6 @@ public class PurchaseController extends BasicController {
 
     @PostMapping("findList")
     @ApiOperation(value = "采购订单列表")
-    @ResponseBody
     public GenericResponse findList(
             @ApiParam(value = "申购日期开始时间") @RequestParam(required = false) String purchaseStartDate,
             @ApiParam(value = "申购日期结束时间") @RequestParam(required = false) String purchaseEndDate,
@@ -103,7 +101,6 @@ public class PurchaseController extends BasicController {
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ApiOperation(value = "修改采购订单信息")
-    @ResponseBody
     public GenericResponse doUpdate(
             @ApiParam(value = "采购订单Id", required = true) @RequestParam Integer id,
             @ApiParam(value = "采购订单编号", required = true) @RequestParam String purchaseNum,
@@ -146,7 +143,6 @@ public class PurchaseController extends BasicController {
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     @ApiOperation(value = "新增采购订单信息")
-    @ResponseBody
     public GenericResponse doAdd(
             @ApiParam(value = "采购编号") @RequestParam String purchaseNum,
             @ApiParam(value = "申购日期") @RequestParam String purchaseDate,

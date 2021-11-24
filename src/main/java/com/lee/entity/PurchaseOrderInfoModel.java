@@ -28,6 +28,7 @@ public class PurchaseOrderInfoModel  implements Serializable {
 	/**
      * 供应商编号
      */
+	@TableField(exist = false)
 	private String supplierNum;
 
 	/**

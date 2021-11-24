@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.WarehousingMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="warehousingInfoMapper" type="com.lee.entity.WarehousingInfoModel">
+        <result property="id" column="id"/>
+        <result property="warehousingNum" column="warehousing_num"/>
+        <result property="purchaseNum" column="purchase_num"/>
+        <result property="supplierNum" column="supplier_num"/>
+        <result property="matPurchaseNum" column="mat_purchase_num"/>
+        <result property="warehousingStatus" column="warehousing_status"/>
+        <result property="warehousingPurpose" column="warehousing_purpose"/>
+        <result property="receivableCount" column="receivable_count"/>
+        <result property="receivedCount" column="received_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="warehousingExt" column="warehousing_ext"/>
+        <result property="isdel" column="isdel"/>
+        <result property="originalOutOrder" column="original_out_order"/>
+        <result property="claimDate" column="claim_date"/>
+    </resultMap>
+
+    <resultMap id="warehousingMapper" type="com.lee.entity.WarehousingInfoModel">
+        <result property="id" column="id"/>
+        <result property="warehousingNum" column="warehousing_num"/>
+        <result property="purchaseNum" column="purchase_num"/>
+        <result property="supplierName" column="sup_name"/>
+        <result property="matPurchaseNum" column="mat_purchase_num"/>
+        <result property="warehousingStatus" column="warehousing_status"/>
+        <result property="warehousingPurpose" column="warehousing_purpose"/>
+        <result property="receivableCount" column="receivable_count"/>
+        <result property="receivedCount" column="received_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="warehousingExt" column="warehousing_ext"/>
+        <result property="isdel" column="isdel"/>
+        <result property="originalOutOrder" column="original_out_order"/>
+        <result property="claimDate" column="claim_date"/>
+    </resultMap>
+
+    <select id="selectWarehousingList" resultMap="warehousingMapper" parameterType="java.util.Map">
+        SELECT
+        a.warehousing_num,
+        a.purchase_num,
+        e.mat_purchase_num,
+        c.sup_name,
+        e.mat_name,
+        e.mat_specs,
+        e.mat_type_code,
+        a.warehousing_purpose,
+        b.capital_type,
+        a.receivable_count,
+        a.received_count,
+        a.warehousing_status
+        FROM
+        warehousing_info a
+        JOIN purchase_order_info b ON a.purchase_num = b.purchase_num
+        JOIN purchase_material_info d ON b.purchase_num = d.purchase_num
+        JOIN sys_material_info e ON d.purchase_mat_code = e.mat_purchase_num
+        JOIN sys_supplier_info c ON e.supplier_num = c.sup_num
+        WHERE
+        a.isdel = 0
+        <if test="warehousingNum != null">
+            and a.warehousing_num = #{warehousingNum}
+        </if>
+        <if test="supplierNum != null">
+            and b.supplier_num = #{supplierNum}
+        </if>
+        <if test="purchaseNum != null">
+            and b.purchase_num = #{purchaseNum}
+        </if>
+        GROUP BY
+        a.warehousing_num
+        <if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+    </select>
+
+    <select id="selectWarehousingCount" resultType="Integer" parameterType="java.util.Map">
+        SELECT
+          count(1)
+        FROM
+        warehousing_info a
+        JOIN purchase_order_info b ON a.purchase_num = b.purchase_num
+        WHERE
+        a.isdel = 0
+        <if test="warehousingNum != null">
+            and a.warehousing_num = #{warehousingNum}
+        </if>
+        <if test="supplierNum != null">
+            and b.supplier_num = #{supplierNum}
+        </if>
+        <if test="purchaseNum != null">
+            and b.purchase_num = #{purchaseNum}
+        </if>
+        GROUP BY
+        a.warehousing_num
+    </select>
+
+
+</mapper>

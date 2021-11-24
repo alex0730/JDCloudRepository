@@ -1,6 +1,11 @@
 package com.lee.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
+@Data
+@TableName(value = "rule_putverifi_info")
 public class RulePutverifiInfoModel  implements Serializable {
 
 	private static final long serialVersionUID = 1L;

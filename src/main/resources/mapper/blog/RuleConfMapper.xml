@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.RuleConfMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="ruleConfInfoMapper" type="com.lee.entity.RuleConfInfoModel">
+        <result property="id" column="id"/>
+        <result property="confDesc" column="conf_desc"/>
+        <result property="confNum" column="conf_num"/>
+        <result property="businessType" column="business_type"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="ruleCode" column="rule_code"/>
+        <result property="materialNum" column="material_num"/>
+        <result property="confPriority" column="conf_priority"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="confExt" column="conf_ext"/>
+        <result property="isdel" column="isdel"/>
+        <result property="ruleType" column="rule_type"/>
+        <result property="ownerName" column="owner_name"/>
+        <result property="ruleName" column="rule_name"/>
+    </resultMap>
+
+
+    <select id="selectRuleConfList" resultMap="ruleConfInfoMapper" parameterType="java.util.Map">
+        SELECT
+        a.conf_desc,
+        a.rule_name,
+        a.rule_type,
+        a.business_type,
+        a.operation_type,
+        b.mat_type_code,
+        c.sup_name,
+        b.mat_name,
+        a.conf_priority
+        FROM
+        rule_conf_info a
+        JOIN sys_material_info b ON a.material_num = b.mat_purchase_num
+        JOIN sys_supplier_info c ON c.sup_num = b.supplier_num
+        WHERE
+        a.isdel = 0
+        <if test="supplierNum != null">
+            and c.sup_num = #{supplierNum}
+        </if>
+        <if test="materialNum != null">
+            and a.material_num = #{materialNum}
+        </if>
+        <if test="businessType != null">
+            and a.business_type = #{businessType}
+        </if>
+        <if test="operationType != null">
+            and a.operation_type = #{operationType}
+        </if>
+        <if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+    </select>
+
+    <select id="selectRuleConfCount" resultType="Integer" parameterType="java.util.Map">
+        SELECT
+        count(1)
+        FROM
+        rule_conf_info a
+        JOIN sys_material_info b ON a.material_num = b.mat_purchase_num
+        JOIN sys_supplier_info c ON c.sup_num = b.supplier_num
+        WHERE
+        a.isdel = 0
+        <if test="supplierNum != null">
+            and c.sup_num = #{supplierNum}
+        </if>
+        <if test="materialNum != null">
+            and a.material_num = #{materialNum}
+        </if>
+        <if test="businessType != null">
+            and a.business_type = #{businessType}
+        </if>
+        <if test="operationType != null">
+            and a.operation_type = #{operationType}
+        </if>
+    </select>
+
+</mapper>

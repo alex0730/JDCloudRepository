@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.RulePutverifiMapper">
+	<!-- 返回值映射map -->
+	<resultMap id="rulePutverifiInfoMapper" type="com.lee.entity.RulePutverifiInfoModel">
+			<result property="id" column="id" />
+			<result property="verifiConfNum" column="verifi_conf_num" />
+			<result property="verifiMixLimit" column="verifi_mix_limit" />
+			<result property="verifiSpaceLimit" column="verifi_space_limit" />
+			<result property="verifiDesc" column="verifi_desc" />
+			<result property="creator" column="creator" />
+			<result property="createTime" column="create_time" />
+			<result property="updater" column="updater" />
+			<result property="updateTime" column="update_time" />
+			<result property="verifiExt" column="verifi_ext" />
+			<result property="isdel" column="isdel" />
+	</resultMap>
+</mapper>

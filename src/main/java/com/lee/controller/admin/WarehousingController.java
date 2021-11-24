@@ -1,13 +1,12 @@
 package com.lee.controller.admin;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lee.common.DateTimeUtil;
 import com.lee.common.ExcludeEmptyQueryWrapper;
 import com.lee.entity.SysSupplierInfoModel;
 import com.lee.entity.common.GenericResponse;
 import com.lee.entity.common.ResponseFormat;
 import com.lee.service.SupplierService;
+import com.lee.service.WarehousingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,47 +18,49 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(value = "供应商管理", description = "供应商管理")
+import java.util.HashMap;
+import java.util.Map;
+
+@Api(value = "入库管理", description = "入库管理")
 @RestController
-@RequestMapping("/sys/supplier")
-public class SupplierController extends BasicController {
+@RequestMapping("/warehousing")
+public class WarehousingController extends BasicController {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     @Autowired
     SupplierService supplierService;
 
+    @Autowired
+    WarehousingService warehousingService;
+
     @RequestMapping(value = "findList", method = RequestMethod.GET)
-    @ApiOperation(value = "供应商列表")
+    @ApiOperation(value = "入库单列表")
     public GenericResponse findList(
-            @ApiParam(value = "供应商编号") @RequestParam(required = false) String supNum,
-            @ApiParam(value = "供应商名称") @RequestParam(required = false) String supName,
-            @ApiParam(value = "联系人") @RequestParam(required = false) String supContacts,
-            @ApiParam(value = "更新开始时间") @RequestParam(required = false) String updateTimeStart,
-            @ApiParam(value = "更新结束时间") @RequestParam(required = false) String updateTimeEnd,
+            @ApiParam(value = "入库单号") @RequestParam(required = false) String warehousingNum,
+            @ApiParam(value = "采购单编号") @RequestParam(required = false) String purchaseNum,
+            @ApiParam(value = "入库单编号") @RequestParam(required = false) String supplierNum,
             @ApiParam(value = "当前页面", required = true) @RequestParam Integer pageNo,
             @ApiParam(value = "每页记录数", required = true) @RequestParam Integer pageSize
     ) {
+        Map<String, Object> searchParams = new HashMap<>();
         try {
-            IPage<SysSupplierInfoModel> page = new Page<>();
-            page.setCurrent(Long.valueOf(pageNo));
-            page.setSize(Long.valueOf(pageSize));
-            IPage<SysSupplierInfoModel> iPage = supplierService.page(page, new ExcludeEmptyQueryWrapper<SysSupplierInfoModel>()
-                    .eq("sup_num", supNum)
-                    .eq("sup_name", supName)
-                    .eq("sup_contacts", supContacts)
-                    .between("update_time", updateTimeStart, updateTimeEnd)
-            );
-            return ResponseFormat.retParam(200, iPage);
+            searchParams.put("warehousingNum", warehousingNum);
+            searchParams.put("purchaseNum", purchaseNum);
+            searchParams.put("supplierNum", supplierNum);
+            searchParams.put("offsetIndex", pageNo);
+            searchParams.put("limit", pageSize);
+            return warehousingService.getPageInfo(searchParams);
         } catch (Exception e) {
-            logger.error("查询供应商异常", e);
-            return ResponseFormat.retParam(500, "查询供应商异常");
+            logger.error("查询入库单异常", e);
+            return ResponseFormat.retParam(500, "查询入库单异常");
         }
     }
 
     @RequestMapping(value = "view", method = RequestMethod.GET)
-    @ApiOperation(value = "供应商信息详情")
-    public GenericResponse doView(@ApiParam(value = "供应商Id", required = true) @RequestParam Integer id) {
+    @ApiOperation(value = "入库单信息详情")
+    public GenericResponse doView(@ApiParam(value = "入库单Id", required = true) @RequestParam Integer id) {
         try {
             SysSupplierInfoModel model = supplierService.getById(id);
             if (model == null) {
@@ -67,15 +68,15 @@ public class SupplierController extends BasicController {
             }
             return ResponseFormat.retParam(200, model);
         } catch (Exception e) {
-            logger.error("查询供应商信息详情异常", e);
-            return ResponseFormat.retParam(500, "查询供应商信息详情异常");
+            logger.error("查询入库单信息详情异常", e);
+            return ResponseFormat.retParam(500, "查询入库单信息详情异常");
         }
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    @ApiOperation(value = "添加供应商信息")
-    public GenericResponse doAdd(@ApiParam(value = "供应商编号", required = true) @RequestParam String supNum,
-                                 @ApiParam(value = "供应商名称", required = true) @RequestParam String supName,
+    @ApiOperation(value = "添加入库单信息")
+    public GenericResponse doAdd(@ApiParam(value = "入库单编号", required = true) @RequestParam String supNum,
+                                 @ApiParam(value = "入库单名称", required = true) @RequestParam String supName,
                                  @ApiParam(value = "联系人", required = true) @RequestParam String supContacts,
                                  @ApiParam(value = "联系电话", required = true) @RequestParam String supTeleno,
                                  @ApiParam(value = "联系地址", required = true) @RequestParam String supAddress,
@@ -102,33 +103,33 @@ public class SupplierController extends BasicController {
             entity.setSupNum(supNum);
             entity.setCreateTime(DateTimeUtil.nowTimeStr());
             supplierService.save(entity);
-            return ResponseFormat.retParam(200, "供应商创建成功");
+            return ResponseFormat.retParam(200, "入库单创建成功");
         } catch (Exception e) {
-            logger.error("创建供应商异常", e);
-            return ResponseFormat.retParam(500, "创建供应商异常");
+            logger.error("创建入库单异常", e);
+            return ResponseFormat.retParam(500, "创建入库单异常");
         }
     }
 
 //    @RequestMapping(value = "delete", method = RequestMethod.POST)
-//    @ApiOperation(value = "批量删除供应商信息")
-//    public GenericResponse doDelete(@ApiParam(value = "供应商Id", required = true) @RequestParam(value = "ids") List<Integer> ids) {
+//    @ApiOperation(value = "批量删除入库单信息")
+//    public GenericResponse doDelete(@ApiParam(value = "入库单Id", required = true) @RequestParam(value = "ids") List<Integer> ids) {
 //        try {
 //            for (int id : ids) {
 //                adminService.removeById(id);
 //            }
 //            return ResponseFormat.retParam(200, "删除成功");
 //        } catch (Exception e) {
-//            logger.error("删除供应商异常", e);
-//            return ResponseFormat.retParam(500, "删除供应商异常");
+//            logger.error("删除入库单异常", e);
+//            return ResponseFormat.retParam(500, "删除入库单异常");
 //        }
 //    }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
-    @ApiOperation(value = "修改供应商信息")
+    @ApiOperation(value = "修改入库单信息")
     public GenericResponse doUpdate(
-            @ApiParam(value = "供应商Id", required = true) @RequestParam Integer id,
-            @ApiParam(value = "供应商编号") @RequestParam(required = false) String supNum,
-            @ApiParam(value = "供应商名称") @RequestParam(required = false) String supName,
+            @ApiParam(value = "入库单Id", required = true) @RequestParam Integer id,
+            @ApiParam(value = "入库单编号") @RequestParam(required = false) String supNum,
+            @ApiParam(value = "入库单名称") @RequestParam(required = false) String supName,
             @ApiParam(value = "联系人") @RequestParam(required = false) String supContacts,
             @ApiParam(value = "联系电话") @RequestParam(required = false) String supTeleno,
             @ApiParam(value = "联系地址") @RequestParam(required = false) String supAddress,
@@ -154,10 +155,10 @@ public class SupplierController extends BasicController {
             entity.setSupNum(supNum);
             entity.setUpdateTime(DateTimeUtil.nowTimeStr());
             supplierService.updateById(entity);
-            return ResponseFormat.retParam(200, "供应商修改成功");
+            return ResponseFormat.retParam(200, "入库单修改成功");
         } catch (Exception e) {
-            logger.error("供应商修改异常", e);
-            return ResponseFormat.retParam(500, "供应商修改异常");
+            logger.error("入库单修改异常", e);
+            return ResponseFormat.retParam(500, "入库单修改异常");
 
         }
     }

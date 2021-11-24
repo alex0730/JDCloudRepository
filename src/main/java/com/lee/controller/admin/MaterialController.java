@@ -12,17 +12,13 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Api(value = "物资管理", description = "物资管理")
-@Controller
+@RestController
 @RequestMapping("/sys/material")
 public class MaterialController extends BasicController {
 
@@ -33,7 +29,6 @@ public class MaterialController extends BasicController {
 
     @RequestMapping(value = "findList", method = RequestMethod.GET)
     @ApiOperation(value = "物资信息列表")
-    @ResponseBody
     public GenericResponse findList(
             @ApiParam(value = "采购单号") @RequestParam(required = false) String matPurchaseNum,
             @ApiParam(value = "入库单号") @RequestParam(required = false) String matOrderNum,
@@ -61,7 +56,6 @@ public class MaterialController extends BasicController {
 
     @RequestMapping(value = "view", method = RequestMethod.GET)
     @ApiOperation(value = "物资信息详情")
-    @ResponseBody
     public GenericResponse doView(@ApiParam(value = "物资编码", required = true) @RequestParam Integer id) {
         try {
             SysMaterialInfoModel sysMaterialInfoModel = materialService.getById(id);
@@ -78,7 +72,6 @@ public class MaterialController extends BasicController {
 
     @RequestMapping(value = "add", method = RequestMethod.GET)
     @ApiOperation(value = "添加物资信息")
-    @ResponseBody
     public GenericResponse doAdd(@ApiParam(value = "物资编号", required = true) @RequestParam String matPurchaseNum,
                                  @ApiParam(value = "物资规格", required = true) @RequestParam String matSpecs,
                                  @ApiParam(value = "物资类别", required = true) @RequestParam String matTypeCode,
@@ -123,7 +116,6 @@ public class MaterialController extends BasicController {
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ApiOperation(value = "修改物资信息")
-    @ResponseBody
     public GenericResponse doUpdate(
             @ApiParam(value = "物资Id", required = true) @RequestParam Integer id,
             @ApiParam(value = "物资编号") @RequestParam(required = false)String matPurchaseNum,

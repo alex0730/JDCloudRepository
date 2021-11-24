@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.RuleLocationMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="ruleLocationInfoMapper" type="com.lee.entity.RuleLocationInfoModel">
+        <result property="id" column="id"/>
+        <result property="locationNum" column="location_num"/>
+        <result property="locationName" column="location_name"/>
+        <result property="locationDesc" column="location_desc"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="locationExt" column="location_ext"/>
+        <result property="isdel" column="isdel"/>
+        <result property="ruleCode" column="rule_code"/>
+        <result property="filterTempMat" column="filter_temp_mat"/>
+        <result property="spositionNumPolicy" column="sposition_num_policy"/>
+        <result property="locationDepositoryLimit" column="location_depository_limit"/>
+        <result property="creator" column="creator"/>
+        <result property="updater" column="updater"/>
+    </resultMap>
+</mapper>
