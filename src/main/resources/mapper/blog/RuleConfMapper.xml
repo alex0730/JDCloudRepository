@@ -12,6 +12,9 @@
         <result property="operationType" column="operation_type"/>
         <result property="ruleCode" column="rule_code"/>
         <result property="materialNum" column="material_num"/>
+        <result property="matName" column="mat_name"/>
+        <result property="matTypeCode" column="mat_type_code"/>
+        <result property="supplierName" column="sup_name"/>
         <result property="confPriority" column="conf_priority"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
@@ -22,9 +25,29 @@
         <result property="ruleName" column="rule_name"/>
     </resultMap>
 
+    <select id="selectById" resultMap="ruleConfInfoMapper" parameterType="Integer">
+        SELECT
+        a.id,
+        a.conf_desc,
+        a.rule_name,
+        a.rule_type,
+        a.business_type,
+        a.operation_type,
+        b.mat_type_code,
+        c.sup_name,
+        b.mat_name,
+        a.conf_priority
+        FROM
+        rule_conf_info a
+        JOIN sys_material_info b ON a.material_num = b.mat_purchase_num
+        JOIN sys_supplier_info c ON c.sup_num = b.supplier_num
+        WHERE
+        a.isdel = 0 and a.id = #{id}
+    </select>
 
     <select id="selectRuleConfList" resultMap="ruleConfInfoMapper" parameterType="java.util.Map">
         SELECT
+        a.id,
         a.conf_desc,
         a.rule_name,
         a.rule_type,

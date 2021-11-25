@@ -53,6 +53,140 @@ public class RuleController extends BasicController {
     @Autowired
     RuleConfService ruleConfService;
 
+    @Autowired
+    RulePickingService rulePickingService;
+
+    @RequestMapping(value = "picking/findList", method = RequestMethod.GET)
+    @ApiOperation(value = "查询拣货任务规则列表")
+    public GenericResponse pickingFindList(
+            @ApiParam(value = "规则编码") @RequestParam(required = false) String pickingNum,
+            @ApiParam(value = "状态") @RequestParam(required = false) String pickingStatus,
+            @ApiParam(value = "当前页面", required = true) @RequestParam Integer pageNo,
+            @ApiParam(value = "每页记录数", required = true) @RequestParam Integer pageSize
+    ) {
+        Map<String, Object> searchParams = new HashMap<>();
+        try {
+            searchParams.put("pickingNum", pickingNum);
+            searchParams.put("pickingStatus", pickingStatus);
+            searchParams.put("offsetIndex", pageNo);
+            searchParams.put("limit", pageSize);
+            return rulePickingService.getPageInfo(searchParams);
+        } catch (Exception e) {
+            logger.error("查询拣货任务规则列表异常", e);
+            return ResponseFormat.retParam(500, "查询拣货任务规则列表异常");
+        }
+    }
+
+    @RequestMapping(value = "picking/view", method = RequestMethod.GET)
+    @ApiOperation(value = "查询拣货任务规则详情")
+    public GenericResponse pickingDoView(@ApiParam(value = "拣货任务规则Id", required = true) @RequestParam Integer id) {
+        try {
+            RulePickingInfoModel model = rulePickingService.getById(id);
+            if (model == null) {
+                return ResponseFormat.retParam(50001, "数据未找到");
+            }
+            return ResponseFormat.retParam(200, model);
+        } catch (Exception e) {
+            logger.error("查询拣货任务规则详情异常", e);
+            return ResponseFormat.retParam(500, "查询拣货任务规则详情异常");
+        }
+    }
+
+    @RequestMapping(value = "picking/add", method = RequestMethod.POST)
+    @ApiOperation(value = "创建拣货任务规则信息")
+    public GenericResponse pickingDoAdd(
+            @ApiParam(value = "规则编码", required = true) @RequestParam String pickingNum,
+            @ApiParam(value = "规则描述", required = true) @RequestParam String pickingDesc,
+            @ApiParam(value = "执行顺序", required = true) @RequestParam Integer pickingExecuteOrder,
+            @ApiParam(value = "是否启用", required = true) @RequestParam String pickingStatus,
+            @ApiParam(value = "订单类型", required = true) @RequestParam String pickingOrderType,
+            @ApiParam(value = "供应商编码", required = true) @RequestParam String supplierNum,
+            @ApiParam(value = "体积限额", required = true) @RequestParam String limitVolume,
+            @ApiParam(value = "重量限额", required = true) @RequestParam String limitWeight,
+            @ApiParam(value = "数量限额", required = true) @RequestParam String limitCount,
+            @ApiParam(value = "品种数限额", required = true) @RequestParam String limitVarieties,
+            @ApiParam(value = "任务条数限额", required = true) @RequestParam String limitTask
+    ) {
+        try {
+            if (rulePickingService.getOne(new ExcludeEmptyQueryWrapper<RulePickingInfoModel>()
+                    .eq("picking_num", pickingNum)) != null) {
+                return ResponseFormat.retParam(50003, "数据已存在");
+            }
+            RulePickingInfoModel entity = new RulePickingInfoModel();
+            entity.setPickingNum(pickingNum);
+            entity.setPickingDesc(pickingDesc);
+            entity.setPickingExecuteOrder(pickingExecuteOrder);
+            entity.setPickingStatus(pickingStatus);
+            entity.setPickingOrderType(pickingOrderType);
+            entity.setSupplierNum(supplierNum);
+            entity.setLimitVolume(limitVolume);
+            entity.setLimitWeight(limitWeight);
+            entity.setLimitCount(limitCount);
+            entity.setLimitVarieties(limitVarieties);
+            entity.setLimitTask(limitTask);
+            entity.setCreateTime(DateTimeUtil.nowTimeStr());
+            rulePickingService.save(entity);
+            return ResponseFormat.retParam(200, "创建拣货任务规则信息成功");
+        } catch (Exception e) {
+            logger.error("创建拣货任务规则信息异常", e);
+            return ResponseFormat.retParam(500, "创建拣货任务规则信息异常");
+        }
+    }
+
+    @RequestMapping(value = "picking/delete", method = RequestMethod.POST)
+    @ApiOperation(value = "删除拣货任务规则信息")
+    public GenericResponse pickingDoDelete(@ApiParam(value = "拣货任务规则Id", required = true) @RequestParam(value = "id") Integer id) {
+        try {
+            rulePickingService.removeById(id);
+            return ResponseFormat.retParam(200, "删除拣货任务规则信息成功");
+        } catch (Exception e) {
+            logger.error("删除拣货任务规则信息异常", e);
+            return ResponseFormat.retParam(500, "删除拣货任务规则信息异常");
+        }
+    }
+
+    @RequestMapping(value = "picking/update", method = RequestMethod.POST)
+    @ApiOperation(value = "修改拣货任务规则信息")
+    public GenericResponse pickingDoUpdate(
+            @ApiParam(value = "拣货任务规则Id") @RequestParam(required = false) Integer id,
+            @ApiParam(value = "规则描述") @RequestParam(required = false) String pickingDesc,
+            @ApiParam(value = "执行顺序") @RequestParam(required = false) Integer pickingExecuteOrder,
+            @ApiParam(value = "是否启用") @RequestParam(required = false) String pickingStatus,
+            @ApiParam(value = "订单类型") @RequestParam(required = false) String pickingOrderType,
+            @ApiParam(value = "供应商编码") @RequestParam(required = false) String supplierNum,
+            @ApiParam(value = "体积限额") @RequestParam(required = false) String limitVolume,
+            @ApiParam(value = "重量限额") @RequestParam(required = false) String limitWeight,
+            @ApiParam(value = "数量限额") @RequestParam(required = false) String limitCount,
+            @ApiParam(value = "品种数限额") @RequestParam(required = false) String limitVarieties,
+            @ApiParam(value = "任务条数限额") @RequestParam(required = false) String limitTask
+    ) {
+        try {
+            if (rulePickingService.getById(id) == null) {
+                return ResponseFormat.retParam(50001, "数据未找到");
+            }
+            RulePickingInfoModel entity = new RulePickingInfoModel();
+            entity.setId(id);
+            entity.setPickingDesc(pickingDesc);
+            entity.setPickingExecuteOrder(pickingExecuteOrder);
+            entity.setPickingStatus(pickingStatus);
+            entity.setPickingOrderType(pickingOrderType);
+            entity.setSupplierNum(supplierNum);
+            entity.setLimitVolume(limitVolume);
+            entity.setLimitWeight(limitWeight);
+            entity.setLimitCount(limitCount);
+            entity.setLimitVarieties(limitVarieties);
+            entity.setLimitTask(limitTask);
+            entity.setUpdateTime(DateTimeUtil.nowTimeStr());
+            rulePickingService.updateById(entity);
+            return ResponseFormat.retParam(200, "修改拣货任务规则信息成功");
+        } catch (Exception e) {
+            logger.error("修改拣货任务规则信息异常", e);
+            return ResponseFormat.retParam(500, "修改拣货任务规则信息异常");
+
+        }
+    }
+
+    // =========================================================================================
     @RequestMapping(value = "conf/findList", method = RequestMethod.GET)
     @ApiOperation(value = "规则配置列表")
     public GenericResponse confFindList(
@@ -83,6 +217,7 @@ public class RuleController extends BasicController {
     public GenericResponse confDoView(@ApiParam(value = "规则配置Id", required = true) @RequestParam Integer id) {
         try {
             RuleConfInfoModel model = ruleConfService.getById(id);
+            // TODO 物资名称
             if (model == null) {
                 return ResponseFormat.retParam(50001, "数据未找到");
             }

@@ -1,5 +1,6 @@
 package com.lee.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -69,6 +70,12 @@ public class RuleConfInfoModel implements Serializable {
     private String ownerName;
 
     private String ruleName;
+    @TableField(exist = false)
+    private String matName;
+    @TableField(exist = false)
+    private String matTypeCode;
+    @TableField(exist = false)
+    private String supplierName;
 
     // setter and getter
 

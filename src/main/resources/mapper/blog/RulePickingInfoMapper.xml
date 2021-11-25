@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.RulePickingMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="rulePickingInfoMapper" type="com.lee.entity.RulePickingInfoModel">
+        <result property="id" column="id"/>
+        <result property="pickingNum" column="picking_num"/>
+        <result property="pickingDesc" column="picking_desc"/>
+        <result property="pickingExecuteOrder" column="picking_execute_order"/>
+        <result property="pickingStatus" column="picking_status"/>
+        <result property="pickingOrderType" column="picking_order_type"/>
+        <result property="supplierNum" column="supplier_num"/>
+        <result property="supplierName" column="sup_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updater" column="updater"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="pickingExt" column="picking_ext"/>
+        <result property="isdel" column="isdel"/>
+        <result property="limitVolume" column="limit_volume"/>
+        <result property="limitWeight" column="limit_weight"/>
+        <result property="limitCount" column="limit_count"/>
+        <result property="limitVarieties" column="limit_varieties"/>
+        <result property="limitTask" column="limit_task"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="rulePickingInfoMapper" parameterType="Integer">
+        SELECT
+        a.*,
+        b.sup_name
+        FROM
+        rule_picking_info a
+        JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
+        WHERE
+        a.isdel = 0 and a.id = #{id}
+    </select>
+
+    <select id="selectRulePickingList" resultMap="rulePickingInfoMapper" parameterType="java.util.Map">
+        SELECT
+        a.picking_num,
+        a.picking_desc,
+        a.picking_execute_order,
+        a.picking_status,
+        a.picking_order_type,
+        b.sup_name
+        FROM
+        rule_picking_info a
+        JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
+        WHERE
+        a.isdel = 0
+        <if test="pickingNum != null">
+            and a.picking_num = #{pickingNum}
+        </if>
+        <if test="pickingStatus != null">
+            and a.picking_status = #{pickingStatus}
+        </if>
+        <if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+    </select>
+
+    <select id="selectRulePickingCount" resultType="Integer" parameterType="java.util.Map">
+        SELECT
+        count(1)
+        FROM
+        rule_picking_info a
+        JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
+        WHERE
+        a.isdel = 0
+        <if test="pickingNum != null">
+            and a.picking_num = #{pickingNum}
+        </if>
+        <if test="pickingStatus != null">
+            and a.picking_status = #{pickingStatus}
+        </if>
+    </select>
+
+</mapper>

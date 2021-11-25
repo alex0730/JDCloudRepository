@@ -67,6 +67,9 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, PurchaseOrd
     public GenericResponse getPurchaseOrderInfo(Integer id) {
         PurchaseOrderInfoModel model = purchaseMapper.selectOne(new LambdaQueryWrapper<PurchaseOrderInfoModel>()
                 .eq(PurchaseOrderInfoModel::getId, id));
+        if (model == null) {
+            return ResponseFormat.retParam(50001, "数据未找到");
+        }
         // 采购订单物资信息列表
         model.setMaterials(purchaseMaterialMapper.selectList(new LambdaQueryWrapper<PurchaseMaterialInfoModel>()
                 .eq(PurchaseMaterialInfoModel::getPurchaseNum, model.getPurchaseNum())));

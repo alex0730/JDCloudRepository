@@ -10,4 +10,6 @@ public interface RuleConfService extends IService<RuleConfInfoModel> {
 
     GenericResponse getPageInfo(Map<String, Object> queryParam);
 
+    RuleConfInfoModel getById(Integer id);
+
 }
