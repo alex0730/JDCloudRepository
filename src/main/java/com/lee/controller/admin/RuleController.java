@@ -217,7 +217,6 @@ public class RuleController extends BasicController {
     public GenericResponse confDoView(@ApiParam(value = "规则配置Id", required = true) @RequestParam Integer id) {
         try {
             RuleConfInfoModel model = ruleConfService.getById(id);
-            // TODO 物资名称
             if (model == null) {
                 return ResponseFormat.retParam(50001, "数据未找到");
             }

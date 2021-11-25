@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.ExcpLocationMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="excpLocationInfoMapper" type="com.lee.entity.ExcpLocationInfoModel">
+        <result property="id" column="id"/>
+        <result property="matPurchaseNum" column="mat_purchase_num"/>
+        <result property="influenceOrderCount" column="influence_order_count"/>
+        <result property="locationExpCount" column="location_exp_count"/>
+        <result property="mat_name" column="matName"/>
+        <result property="mat_type_code" column="matTypeCode"/>
+        <result property="mat_num" column="matNum"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isdel" column="isdel"/>
+        <result property="exlocationExt" column="exlocation_ext"/>
+    </resultMap>
+
+    <select id="selectLocationList" resultMap="excpLocationInfoMapper" parameterType="java.util.Map">
+        SELECT
+        a.influence_order_count,
+        a.location_exp_count,
+        b.mat_num,
+        b.mat_type_code,
+        b.mat_name
+        FROM
+        excp_location_info a
+        JOIN sys_material_info b ON a.mat_purchase_num = b.mat_purchase_num
+        WHERE a.isdel = 0
+        <if test="matNum != null">
+            and b.mat_num =#{matNum}
+        </if>
+        <if test="matName != null">
+            and b.mat_name = #{matName}
+        </if>
+        <if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+    </select>
+    <select id="selectLocationCount" resultType="Integer">
+        SELECT
+        count(1)
+        FROM
+        excp_location_info a
+        JOIN sys_material_info b ON a.mat_purchase_num = b.mat_purchase_num
+        WHERE a.isdel = 0
+        <if test="matNum != null">
+            and b.mat_num =#{matNum}
+        </if>
+        <if test="matName != null">
+            and b.mat_name = #{matName}
+        </if>
+    </select>
+</mapper>

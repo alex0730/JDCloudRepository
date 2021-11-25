@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.ExcpPutonMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="excpPutonInfoMapper" type="com.lee.entity.ExcpPutonInfoModel">
+        <result property="id" column="id"/>
+        <result property="containerNum" column="container_num"/>
+        <result property="matPurchaseNum" column="mat_purchase_num"/>
+        <result property="expReason" column="exp_reason"/>
+        <result property="receivableCount" column="receivable_count"/>
+        <result property="receivedCount" column="received_count"/>
+        <result property="handleCount" column="handle_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="exputonExt" column="exputon_ext"/>
+        <result property="isdel" column="isdel"/>
+        <result property="mat_name" column="matName"/>
+        <result property="matNum" column="mat_num"/>
+        <result property="matUnit" column="mat_unit"/>
+        <result property="matSpecs" column="mat_specs"/>
+    </resultMap>
+
+    <select id="selectPutonList" resultMap="excpPutonInfoMapper" parameterType="java.util.Map">
+        SELECT
+        a.container_num,
+        b.mat_num,
+        b.mat_specs,
+        b.mat_name,
+        b.mat_unit,
+        a.exp_reason,
+        a.receivable_count,
+        a.received_count,
+        a.handle_count
+        FROM
+        excp_puton_info a
+        JOIN sys_material_info b ON a.mat_purchase_num = b.mat_purchase_num
+        WHERE
+        a.isdel = 0
+        <if test="offsetIndex != null">limit #{offsetIndex}, #{limit}</if>
+    </select>
+    <select id="selectPutonCount" resultType="Integer">
+		SELECT
+			count(1)
+		FROM
+		excp_puton_info a
+		JOIN sys_material_info b ON a.mat_purchase_num = b.mat_purchase_num
+		WHERE
+		a.isdel = 0
+	</select>
+
+
+</mapper>
