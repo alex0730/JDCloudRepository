@@ -48,7 +48,6 @@
 		a.id,
 		a.purchase_num,
 		a.purchase_date,
-		b.sup_name,
 		a.order_amount,
 		a.capital_type,
 		a.purchase_type,
@@ -59,14 +58,15 @@
 		a.purchase_complete_date
 		FROM
 		purchase_order_info a
-		JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
 		JOIN purchase_material_info d ON a.purchase_num = d.purchase_num
+		JOIN sys_material_info c ON c.mat_purchase_num = d.purchase_material_info
+		JOIN sys_supplier_info b ON c.supplier_num = b.sup_num
 		WHERE a.isdel = 0
 		<if test="purchaseStartDate != null and purchaseEndDate != null">
 			and a.purchase_date BETWEEN #{purchaseStartDate} AND #{purchaseEndDate}
 		</if>
 		<if test="supplierNum != null">
-			and a.supplier_num =  #{supplierNum}
+			and c.supplier_num =  #{supplierNum}
 		</if>
 		<if test="purchaseType != null">
 			and a.purchase_type =  #{purchaseType}
@@ -96,14 +96,15 @@
 			count(1)
 		FROM
 		purchase_order_info a
-		JOIN sys_supplier_info b ON a.supplier_num = b.sup_num
 		JOIN purchase_material_info d ON a.purchase_num = d.purchase_num
+		JOIN sys_material_info c ON c.mat_purchase_num = d.purchase_material_info
+		JOIN sys_supplier_info b ON c.supplier_num = b.sup_num
 		WHERE a.isdel = 0
 		<if test="purchaseStartDate != null and purchaseEndDate != null">
 			and a.purchase_date BETWEEN #{purchaseStartDate} AND #{purchaseEndDate}
 		</if>
 		<if test="supplierNum != null">
-			and a.supplier_num =  #{supplierNum}
+			and c.supplier_num =  #{supplierNum}
 		</if>
 		<if test="purchaseType != null">
 			and a.purchase_type =  #{purchaseType}

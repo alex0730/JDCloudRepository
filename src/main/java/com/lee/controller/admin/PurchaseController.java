@@ -3,22 +3,23 @@ package com.lee.controller.admin;
 
 import com.alibaba.fastjson.JSONArray;
 import com.lee.common.DateTimeUtil;
-import com.lee.entity.PurchaseAnnexInfoModel;
-import com.lee.entity.PurchaseMaterialInfoModel;
-import com.lee.entity.PurchaseOrderInfoModel;
-import com.lee.entity.PurchasePaymentInfoModel;
+import com.lee.entity.*;
 import com.lee.entity.common.GenericResponse;
 import com.lee.entity.common.ResponseFormat;
 import com.lee.service.PurchaseService;
+import com.lee.service.WarehousingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,6 +39,9 @@ public class PurchaseController extends BasicController {
 
     @Autowired
     PurchaseService purchaseService;
+
+    @Autowired
+    WarehousingService warehousingService;
 
     @PostMapping("findList")
     @ApiOperation(value = "采购订单列表")
@@ -77,10 +81,10 @@ public class PurchaseController extends BasicController {
 
     @RequestMapping(value = "delete", method = RequestMethod.GET)
     @ApiOperation(value = "删除采购订单信息")
-    public GenericResponse doDelete(@ApiParam(value = "采购订单信息Id", required = true) @RequestParam(value = "id") Integer id) {
+    public GenericResponse doDelete(@ApiParam(value = "采购订单信息Id", required = true) @RequestParam(value = "id") Integer id,
+                                    @ApiParam(value = "采购订单编码", required = true) @RequestParam(value = "purchaseNum") String purchaseNum) {
         try {
-            purchaseService.removeById(id);
-            return ResponseFormat.retParam(200, "删除采购订单信息成功");
+            return purchaseService.delete(id, purchaseNum);
         } catch (Exception e) {
             logger.error("删除采购订单信息异常", e);
             return ResponseFormat.retParam(500, "删除采购订单信息异常");
@@ -171,10 +175,31 @@ public class PurchaseController extends BasicController {
             entity.setCapitalType(capitalType);
             entity.setPurchaseBasis(purchaseBasis);
             entity.setCreateTime(DateTimeUtil.nowTimeStr());
-            purchaseService.save(entity, JSONArray.parseArray(materials, PurchaseMaterialInfoModel.class),
+            List<PurchaseMaterialInfoModel> purchaseMaterialInfoModels = JSONArray.parseArray(materials, PurchaseMaterialInfoModel.class);
+            purchaseService.save(entity, purchaseMaterialInfoModels,
                     JSONArray.parseArray(payments, PurchasePaymentInfoModel.class),
                     JSONArray.parseArray(hannexs, PurchaseAnnexInfoModel.class),
                     JSONArray.parseArray(oannexs, PurchaseAnnexInfoModel.class));
+            // 生成入库单
+            if (!CollectionUtils.isEmpty(purchaseMaterialInfoModels)) {
+                List<WarehousingInfoModel> warehousingInfoModels = new ArrayList<>();
+                for (PurchaseMaterialInfoModel materialInfoModel : purchaseMaterialInfoModels) {
+                    WarehousingInfoModel model = new WarehousingInfoModel();
+                    // TODO 入库单号生成规则
+                    model.setWarehousingNum("YJ20210915");
+                    model.setPurchaseNum(purchaseNum);
+                    model.setMatPurchaseNum(materialInfoModel.getPurchaseMatCode());
+                    // TODO 入库单初始状态
+                    model.setWarehousingStatus(0);
+                    // TODO 入库目的和采购目的是否相同？如果不相同，那么来源是哪里？
+                    model.setWarehousingPurpose(0);
+                    model.setReceivableCount(materialInfoModel.getPurchaseMatNum());
+                    model.setReceivedCount(0);
+                    model.setAmountType(capitalType);
+                    warehousingInfoModels.add(model);
+                }
+                warehousingService.saveBatch(warehousingInfoModels);
+            }
             return ResponseFormat.retParam(200, "创建采购订单成功");
         } catch (Exception e) {
             logger.error("创建采购订单异常", e);

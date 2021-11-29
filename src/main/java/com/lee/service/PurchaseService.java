@@ -30,5 +30,5 @@ public interface PurchaseService extends IService<PurchaseOrderInfoModel> {
     GenericResponse update(PurchaseOrderInfoModel model, List<PurchaseMaterialInfoModel> materials,
                          List<PurchasePaymentInfoModel> payments, List<PurchaseAnnexInfoModel> hannexs, List<PurchaseAnnexInfoModel> oannexs);
 
-
+    GenericResponse delete(Integer id, String purchaseNum);
 }

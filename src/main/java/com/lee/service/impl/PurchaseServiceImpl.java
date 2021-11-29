@@ -5,16 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lee.common.DateTimeUtil;
-import com.lee.entity.PurchaseAnnexInfoModel;
-import com.lee.entity.PurchaseMaterialInfoModel;
-import com.lee.entity.PurchaseOrderInfoModel;
-import com.lee.entity.PurchasePaymentInfoModel;
+import com.lee.common.ExcludeEmptyQueryWrapper;
+import com.lee.entity.*;
 import com.lee.entity.common.GenericResponse;
 import com.lee.entity.common.ResponseFormat;
-import com.lee.mapper.PurchaseAnnexMapper;
-import com.lee.mapper.PurchaseMapper;
-import com.lee.mapper.PurchaseMaterialMapper;
-import com.lee.mapper.PurchasePaymentMapper;
+import com.lee.mapper.*;
 import com.lee.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,9 +42,29 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, PurchaseOrd
     @Autowired
     PurchaseAnnexMapper purchaseAnnexMapper;
 
+    @Autowired
+    WarehousingMapper warehousingMapper;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public GenericResponse delete(Integer id, String purchaseNum) {
+        purchaseMapper.deleteById(id);
+        warehousingMapper.delete(new LambdaQueryWrapper<WarehousingInfoModel>().
+                eq(WarehousingInfoModel::getPurchaseNum, purchaseNum));
+        purchaseMaterialMapper.delete(new LambdaQueryWrapper<PurchaseMaterialInfoModel>().
+                eq(PurchaseMaterialInfoModel::getPurchaseNum, purchaseNum));
+        purchasePaymentMapper.delete(new LambdaQueryWrapper<PurchasePaymentInfoModel>().
+                eq(PurchasePaymentInfoModel::getPurchaseOrderNum, purchaseNum));
+        purchaseAnnexMapper.delete(new LambdaQueryWrapper<PurchaseAnnexInfoModel>().
+                eq(PurchaseAnnexInfoModel::getPurchaseOrderNum, purchaseNum));
+        return ResponseFormat.retParam(200, "删除成功");
+    }
+
     public GenericResponse getPageInfo(Map<String, Object> queryParam) {
         IPage<PurchaseOrderInfoModel> page = new Page<>();
-        List<PurchaseOrderInfoModel> purchaseOrderInfoModels = this.purchaseMapper.selectPurchaseOrderList(queryParam);
+        List<PurchaseOrderInfoModel> purchaseOrderInfoModels = this.purchaseMapper.selectList(
+                new ExcludeEmptyQueryWrapper<PurchaseOrderInfoModel>().eq("purchase_num",
+                        String.valueOf(queryParam.get("purchaseNum"))));
         if (!CollectionUtils.isEmpty(purchaseOrderInfoModels)) {
             for (PurchaseOrderInfoModel model : purchaseOrderInfoModels) {
                 // 采购订单物资信息列表
@@ -138,25 +153,41 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, PurchaseOrd
                                   List<PurchaseAnnexInfoModel> oannexs) {
         // 修改采购订单基本信息
         purchaseMapper.updateById(model);
+        String purchaseNum = model.getPurchaseNum();
         // 删除采购订单下的所有物资信息
         purchaseMaterialMapper.delete(new LambdaQueryWrapper<PurchaseMaterialInfoModel>().
-                eq(PurchaseMaterialInfoModel::getPurchaseNum, model.getPurchaseNum()));
+                eq(PurchaseMaterialInfoModel::getPurchaseNum, purchaseNum));
+        // 删除采购单对应入库单的所有物资信息
+        warehousingMapper.delete(new LambdaQueryWrapper<WarehousingInfoModel>().
+                eq(WarehousingInfoModel::getPurchaseNum, purchaseNum));
         if (!CollectionUtils.isEmpty(materials)) {
             // 修改采购订单物资信息
             for (PurchaseMaterialInfoModel material : materials) {
                 material.setCreateTime(DateTimeUtil.nowTimeStr());
                 material.setUpdateTime(DateTimeUtil.nowTimeStr());
-                material.setPurchaseNum(model.getPurchaseNum());
+                material.setPurchaseNum(purchaseNum);
                 purchaseMaterialMapper.insert(material);
+                WarehousingInfoModel warehousingInfoModel = new WarehousingInfoModel();
+                // TODO 入库单号生成规则
+                warehousingInfoModel.setWarehousingNum("YJ20210915");
+                warehousingInfoModel.setPurchaseNum(purchaseNum);
+                warehousingInfoModel.setMatPurchaseNum(material.getPurchaseMatCode());
+                // TODO 入库单初始状态
+                warehousingInfoModel.setWarehousingStatus(0);
+                // TODO 入库目的和采购目的是否相同？如果不相同，那么来源是哪里？
+                warehousingInfoModel.setWarehousingPurpose(0);
+                warehousingInfoModel.setReceivableCount(material.getPurchaseMatNum());
+                warehousingInfoModel.setReceivedCount(0);
+                warehousingInfoModel.setAmountType(model.getCapitalType());
             }
         }
         // 删除采购订单下的所有支付信息
         purchasePaymentMapper.delete(new LambdaQueryWrapper<PurchasePaymentInfoModel>().
-                eq(PurchasePaymentInfoModel::getPurchaseOrderNum, model.getPurchaseNum()));
+                eq(PurchasePaymentInfoModel::getPurchaseOrderNum, purchaseNum));
         if (!CollectionUtils.isEmpty(payments)) {
             // 修改采购订单支付信息
             for (PurchasePaymentInfoModel payment : payments) {
-                payment.setPurchaseOrderNum(model.getPurchaseNum());
+                payment.setPurchaseOrderNum(purchaseNum);
                 payment.setCreateTime(DateTimeUtil.nowTimeStr());
                 payment.setUpdateTime(DateTimeUtil.nowTimeStr());
                 purchasePaymentMapper.insert(payment);
@@ -164,26 +195,26 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseMapper, PurchaseOrd
         }
         // 删除采购订单下的所有合同附件
         purchaseAnnexMapper.delete(new LambdaQueryWrapper<PurchaseAnnexInfoModel>().eq(PurchaseAnnexInfoModel::getPurchaseAnnexType, "合同附件")
-                .eq(PurchaseAnnexInfoModel::getPurchaseOrderNum, model.getPurchaseNum()));
+                .eq(PurchaseAnnexInfoModel::getPurchaseOrderNum, purchaseNum));
         if (!CollectionUtils.isEmpty(hannexs)) {
             // 修改采购订单合同附件信息
             for (PurchaseAnnexInfoModel hannex : hannexs) {
                 hannex.setCreateTime(DateTimeUtil.nowTimeStr());
                 hannex.setUpdateTime(DateTimeUtil.nowTimeStr());
-                hannex.setPurchaseOrderNum(model.getPurchaseNum());
+                hannex.setPurchaseOrderNum(purchaseNum);
                 hannex.setPurchaseAnnexType("合同附件");
                 purchaseAnnexMapper.insert(hannex);
             }
         }
         // 删除采购订单下的其他流程附件
         purchaseAnnexMapper.delete(new LambdaQueryWrapper<PurchaseAnnexInfoModel>().eq(PurchaseAnnexInfoModel::getPurchaseAnnexType, "其他流程附件")
-                .eq(PurchaseAnnexInfoModel::getPurchaseOrderNum, model.getPurchaseNum()));
+                .eq(PurchaseAnnexInfoModel::getPurchaseOrderNum, purchaseNum));
         if (!CollectionUtils.isEmpty(hannexs)) {
             // 修改采购订单其他流程附件信息
             for (PurchaseAnnexInfoModel oannex : oannexs) {
                 oannex.setCreateTime(DateTimeUtil.nowTimeStr());
                 oannex.setUpdateTime(DateTimeUtil.nowTimeStr());
-                oannex.setPurchaseOrderNum(model.getPurchaseNum());
+                oannex.setPurchaseOrderNum(purchaseNum);
                 oannex.setPurchaseAnnexType("其他流程附件");
                 purchaseAnnexMapper.insert(oannex);
             }

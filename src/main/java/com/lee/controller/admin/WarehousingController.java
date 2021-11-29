@@ -1,7 +1,6 @@
 package com.lee.controller.admin;
 
 import com.lee.common.DateTimeUtil;
-import com.lee.common.ExcludeEmptyQueryWrapper;
 import com.lee.entity.SysSupplierInfoModel;
 import com.lee.entity.common.GenericResponse;
 import com.lee.entity.common.ResponseFormat;
@@ -73,56 +72,6 @@ public class WarehousingController extends BasicController {
         }
     }
 
-    @RequestMapping(value = "add", method = RequestMethod.POST)
-    @ApiOperation(value = "添加入库单信息")
-    public GenericResponse doAdd(@ApiParam(value = "入库单编号", required = true) @RequestParam String supNum,
-                                 @ApiParam(value = "入库单名称", required = true) @RequestParam String supName,
-                                 @ApiParam(value = "联系人", required = true) @RequestParam String supContacts,
-                                 @ApiParam(value = "联系电话", required = true) @RequestParam String supTeleno,
-                                 @ApiParam(value = "联系地址", required = true) @RequestParam String supAddress,
-                                 @ApiParam(value = "联系邮箱", required = true) @RequestParam String supMail,
-                                 @ApiParam(value = "银行账户", required = true) @RequestParam String supAccountNumber,
-                                 @ApiParam(value = "开户行", required = true) @RequestParam String supBankName,
-                                 @ApiParam(value = "备注", required = false) @RequestParam(required = false) String supRemark
-    ) {
-        try {
-            if (supplierService.getOne(new ExcludeEmptyQueryWrapper<SysSupplierInfoModel>()
-                    .eq("sup_num", supNum)) != null || supplierService.getOne(new ExcludeEmptyQueryWrapper<SysSupplierInfoModel>()
-                    .eq("sup_name", supName)) != null) {
-                return ResponseFormat.retParam(50003, "数据已存在");
-            }
-            SysSupplierInfoModel entity = new SysSupplierInfoModel();
-            entity.setSupRemark(supRemark);
-            entity.setSupTeleno(supTeleno);
-            entity.setSupAddress(supAddress);
-            entity.setSupName(supName);
-            entity.setSupBankName(supBankName);
-            entity.setSupMail(supMail);
-            entity.setSupAccountNumber(supAccountNumber);
-            entity.setSupContacts(supContacts);
-            entity.setSupNum(supNum);
-            entity.setCreateTime(DateTimeUtil.nowTimeStr());
-            supplierService.save(entity);
-            return ResponseFormat.retParam(200, "入库单创建成功");
-        } catch (Exception e) {
-            logger.error("创建入库单异常", e);
-            return ResponseFormat.retParam(500, "创建入库单异常");
-        }
-    }
-
-//    @RequestMapping(value = "delete", method = RequestMethod.POST)
-//    @ApiOperation(value = "批量删除入库单信息")
-//    public GenericResponse doDelete(@ApiParam(value = "入库单Id", required = true) @RequestParam(value = "ids") List<Integer> ids) {
-//        try {
-//            for (int id : ids) {
-//                adminService.removeById(id);
-//            }
-//            return ResponseFormat.retParam(200, "删除成功");
-//        } catch (Exception e) {
-//            logger.error("删除入库单异常", e);
-//            return ResponseFormat.retParam(500, "删除入库单异常");
-//        }
-//    }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     @ApiOperation(value = "修改入库单信息")

@@ -44,11 +44,7 @@
         SELECT
         a.warehousing_num,
         a.purchase_num,
-        e.mat_purchase_num,
         c.sup_name,
-        e.mat_name,
-        e.mat_specs,
-        e.mat_type_code,
         a.warehousing_purpose,
         b.capital_type,
         a.receivable_count,
@@ -57,9 +53,7 @@
         FROM
         warehousing_info a
         JOIN purchase_order_info b ON a.purchase_num = b.purchase_num
-        JOIN purchase_material_info d ON b.purchase_num = d.purchase_num
-        JOIN sys_material_info e ON d.purchase_mat_code = e.mat_purchase_num
-        JOIN sys_supplier_info c ON e.supplier_num = c.sup_num
+        JOIN sys_supplier_info c ON b.supplier_num = c.sup_num
         WHERE
         a.isdel = 0
         <if test="warehousingNum != null">
@@ -78,10 +72,11 @@
 
     <select id="selectWarehousingCount" resultType="Integer" parameterType="java.util.Map">
         SELECT
-          count(1)
+        count(1)
         FROM
         warehousing_info a
         JOIN purchase_order_info b ON a.purchase_num = b.purchase_num
+        JOIN sys_supplier_info c ON b.supplier_num = c.sup_num
         WHERE
         a.isdel = 0
         <if test="warehousingNum != null">

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lee.mapper.WarehouseMaterialMapper">
+    <!-- 返回值映射map -->
+    <resultMap id="warehouseMaterialInfoMapper" type="com.lee.entity.WarehouseMaterialInfoModel">
+        <result property="id" column="id"/>
+        <result property="warehouseNum" column="warehouse_num"/>
+        <result property="warehouseMatCode" column="warehouse_mat_code"/>
+        <result property="warehouseMatReceived" column="warehouse_mat_received"/>
+        <result property="warehouseMatReceivable" column="warehouse_mat_receivable"/>
+        <result property="warehouseMatStatus" column="warehouse_mat_status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isdel" column="isdel"/>
+        <result property="warehouseMatExt" column="warehouse_mat_ext"/>
+    </resultMap>
+
+
+</mapper>

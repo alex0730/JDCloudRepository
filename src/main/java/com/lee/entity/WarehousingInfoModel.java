@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
+
 @Data
 @TableName(value ="warehousing_info")
 public class WarehousingInfoModel  implements Serializable {
@@ -89,4 +91,10 @@ public class WarehousingInfoModel  implements Serializable {
 	 * @return
 	 */
 	private String amountType;
+
+	/**
+	 * 物资列表
+	 */
+	@TableField(exist = false)
+	private List<WarehouseMaterialInfoModel> materials;
 }
